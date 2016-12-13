@@ -4,7 +4,9 @@ using System.IO.Ports;
 
 public class ControllerScript : MonoBehaviour
 {
-    SerialPort stream = new SerialPort("COM4", 115200);
+    [SerializeField]
+    private string comPort = "COM3";
+    SerialPort stream;
     string receivedData = "EMPTY";
     int digitalData;
     string[] analogData;
@@ -66,6 +68,7 @@ public class ControllerScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        stream = new SerialPort(comPort, 115200);
         stream.Open();//Open the serial Stream
         Debug.Log("Serial Port was opened");
     }
