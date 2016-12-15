@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     GameObject explosion;
 
-    float hitpoints;
+    public float hitpoints;
 
 	// Use this for initialization
 	void Start ()
@@ -43,8 +43,6 @@ public class Enemy : MonoBehaviour {
         else if(other.tag == "Player")
         {
             hitpoints = 0;
-            Player player = other.gameObject.GetComponent<Player>();
-            player.hit(100);
         }
     }
 }

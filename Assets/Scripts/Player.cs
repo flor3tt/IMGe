@@ -81,9 +81,31 @@ public class Player : MonoBehaviour {
         remainingLaserCooldown -= Time.deltaTime;
     }
 
-    //Wird aufgerufen wenn der Spieler getroffen wurde
-    public void hit(float damage)
+    void OnGUI()
     {
-        hitpoints -= damage;
+        GUI.Label(new Rect(10, 0, 100, 20), "HitPoints:\t" + hitpoints);
+        GUI.Label(new Rect(10, 20, 100, 20), "Shield:\t" + shieldpoints);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        float damage = 0;
+        if(other.tag == "Enemy")
+        {
+            damage = 100;
+        }
+        else if(other.tag == "Laser")
+        {
+            damage = 25;
+        }
+
+        if(shieldpoints > 0)
+        {
+            shieldpoints = Mathf.Max(0, shieldpoints - damage);
+        }
+        else
+        {
+            hitpoints -= damage;
+        }
     }
 }
