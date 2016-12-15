@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
     //Laser Prefab
     public GameObject laserPrefab;
 
-    //Public control vriables
+    //Public control variables
     public float speed;
     public float maxSpeed;
     public float maxAcceleration;
@@ -48,6 +48,7 @@ public class Player : MonoBehaviour {
         if(hitpoints <= 0)
         {
             Destroy(gameObject);
+
             //ToDo Game Over Scene
         }
 
