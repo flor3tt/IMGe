@@ -8,8 +8,6 @@ public class Laser : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-        //transform.RotateAround(transform.position, transform.right, 90);
-        //transform.RotateAround(transform.position, transform.up, 180);
         transform.Rotate(Vector3.right, 90);
 
         //Destroy after 15 sec

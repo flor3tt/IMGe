@@ -6,6 +6,9 @@ public class Player : MonoBehaviour {
     //Controller Object
     public ControllerScript controller;
 
+    //Shield
+    public GameObject shield;
+
     //Laser Prefab
     public GameObject laserPrefab;
 
@@ -14,7 +17,6 @@ public class Player : MonoBehaviour {
     public float maxSpeed;
     public float maxAcceleration;
     public float rotationSpeed;
-    public float maxRotationSpeed;
     public float laserCooldown;
 
 
@@ -28,6 +30,7 @@ public class Player : MonoBehaviour {
     {
         hitpoints = 100;
         shieldpoints = 200;
+        shield = GameObject.FindGameObjectWithTag("Shield");
 	}
 
     //FixedUpdate is called in fixed time intervals
@@ -36,9 +39,6 @@ public class Player : MonoBehaviour {
         speed += (0.5f - controller.getSlider1()) * 2 * maxAcceleration;
         speed = Mathf.Min(speed, maxSpeed);
         speed = Mathf.Max(speed, 0);
-
-        //rotationSpeed = maxRotationSpeed * (1- Mathf.Pow(speed / maxSpeed, 3));
-        rotationSpeed = maxRotationSpeed;
     }
 	
 	// Update is called once per frame
@@ -52,8 +52,16 @@ public class Player : MonoBehaviour {
             //ToDo Game Over Scene
         }
 
+        //(de-)aktivate shield Renderer
+        if(shield != null)
+        {
+            shield.GetComponent<Renderer>().enabled = shieldpoints > 0;
+        }
+
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
+        /**
+         * Rotation ohne Accelerometer
         //Rotation Horizontal
         if(controller.getButton5())
         {
@@ -66,6 +74,19 @@ public class Player : MonoBehaviour {
         //Rotation Vertikal
 
         transform.Rotate(Vector3.right, (0.5f - controller.getSlider2smooth()) * -1 * rotationSpeed * Time.deltaTime);
+        */
+
+        //Rotation mit Accelerometer
+        float accelX = controller.getAccelXsmooth();
+        float accelY = controller.getAccelYsmooth();
+
+
+        float rotVertikal = accelX * rotationSpeed * Time.deltaTime;
+        float rotHorizontal = accelY * rotationSpeed * Time.deltaTime;
+
+        transform.Rotate(Vector3.right, rotVertikal);
+        transform.Rotate(Vector3.up, rotHorizontal);
+
 
         //Shoot da LAAASOOOOOOOR
         if (controller.getButton2())
@@ -90,6 +111,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.tag);
         float damage = 0;
         if(other.tag == "Enemy")
         {
@@ -98,6 +120,7 @@ public class Player : MonoBehaviour {
         else if(other.tag == "Laser")
         {
             damage = 25;
+            Destroy(other.gameObject);
         }
 
         if(shieldpoints > 0)

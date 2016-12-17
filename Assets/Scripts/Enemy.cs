@@ -10,17 +10,24 @@ public class Enemy : MonoBehaviour {
     Transform player;
     private float playerSpeed;
 
+    //Laser Prefab
+    public GameObject laserPrefab;
+
     public float hitpoints;
     public float speed;
-
-    [SerializeField]
+    
+    //Flight control
     private bool isClose;
     Quaternion currentRotation;
     Quaternion toRotation;
     public float lerpTime;
 
-	// Use this for initialization
-	void Start ()
+    //Weapon control
+    public float laserCooldown;
+    float remainingLaserCooldown;
+
+    // Use this for initialization
+    void Start ()
     {
         currentRotation = transform.rotation;
         //To-Do: move player detection to Radar-Like stuff
@@ -42,7 +49,8 @@ public class Enemy : MonoBehaviour {
             currentRotation = transform.rotation;
 
             /**
-             * Fliegt 
+             * Fliegt auf einen Punkt vor dem Spieler zu, abhängig von der Geschwindigkeit des Spielers
+             * Ab einer Distanz von 75 beginnt ein Ausweichmanöver, das knapp über den Spieler hinwegführt
              * 
              */
             if (Vector3.Distance(transform.position, player.transform.position) < 100 && !isClose)
@@ -88,12 +96,33 @@ public class Enemy : MonoBehaviour {
 
         //Move
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
-        
+
+        //Different behaviour for flying towards / away from the player
+        if(isClose)
+        {
+        }
+        else
+        {
+            //Shoot while actually flying towards the player, NOT while still turning
+            if (Mathf.Abs(Quaternion.Angle(transform.rotation, toRotation)) < 15)
+            {
+                if (remainingLaserCooldown <= 0)
+                {
+                    remainingLaserCooldown = laserCooldown;
+                    Instantiate(laserPrefab, transform.position + transform.forward * 2 + transform.right * 0.35f - transform.up * 1f, transform.rotation);
+                    Instantiate(laserPrefab, transform.position + transform.forward * 2 - transform.right * 0.35f - transform.up * 1f, transform.rotation);
+                }
+            }
+        }
+
+        //Handle Weapon Cooldowns
+        remainingLaserCooldown -= Time.deltaTime;
     }
 
     //Collision Detection
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.tag);
         if (other.tag == "Laser")
         {
             hitpoints -= 25;
