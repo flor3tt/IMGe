@@ -15,9 +15,10 @@ public class Enemy : MonoBehaviour {
 
     public float hitpoints;
     public float speed;
-    
+
     //Flight control
-    private bool isClose;
+    Vector3 searchAngles;
+    bool isClose;
     Quaternion currentRotation;
     Quaternion toRotation;
     public float lerpTime;
@@ -30,12 +31,17 @@ public class Enemy : MonoBehaviour {
     void Start ()
     {
         currentRotation = transform.rotation;
-        //To-Do: move player detection to Radar-Like stuff
+        //zufällige Winkel für eine runde Flugbahn um den Spieler zu "suchen"
+        searchAngles.x = Random.Range(0, 20);
+        searchAngles.y = Random.Range(0, 20);
+
+        /**
         player = GameObject.FindGameObjectWithTag("Player").transform;
         transform.LookAt(player.position - player.forward * playerSpeed);
         toRotation = transform.rotation;
         transform.rotation = currentRotation;
         lerpTime = 0;
+        */
 	}
 
     void FixedUpdate()
@@ -97,20 +103,66 @@ public class Enemy : MonoBehaviour {
         //Move
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
-        //Different behaviour for flying towards / away from the player
-        if(isClose)
+        //Different behaviour for having (not) found the player
+        if(player == null)
         {
+            //transform.Rotate(searchAngles * Time.deltaTime);
+            LayerMask mask = 8;
+            RaycastHit hit;
+
+            Quaternion up = Quaternion.AngleAxis(5, Vector3.right);
+            Quaternion down = Quaternion.AngleAxis(-5, Vector3.right);
+            Quaternion right = Quaternion.AngleAxis(5, Vector3.up);
+            Quaternion left = Quaternion.AngleAxis(-5, Vector3.up);
+            Vector3 vector = new Vector3(0, 0, 0);
+            vector = Quaternion.AngleAxis(-45, Vector3.up) * vector;
+
+            //Cast a bunch of rays in a cone forward to find the player
+            if (Physics.Raycast(transform.position,                 transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, up *            transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, up * right *    transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, right *         transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, down * right *  transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, down *          transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, down * left *   transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, left *          transform.forward, out hit, 300) ||
+                Physics.Raycast(transform.position, up * left *     transform.forward, out hit, 300) )
+            {
+                player = hit.transform;
+            }
+            else
+            {
+            }
+            /**
+            //Raycast debug:
+            Debug.DrawRay(transform.position, transform.forward * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (up * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (up * right * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (right * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (down * right * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (down * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (down * left * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (left * transform.forward) * 300, Color.blue, 1);
+            Debug.DrawRay(transform.position, (up * left * transform.forward) * 300, Color.blue, 1);
+            */
         }
         else
         {
-            //Shoot while actually flying towards the player, NOT while still turning
-            if (Mathf.Abs(Quaternion.Angle(transform.rotation, toRotation)) < 15)
+            //Different behaviour for flying towards / away from the player
+            if (isClose)
             {
-                if (remainingLaserCooldown <= 0)
+            }
+            else
+            {
+                //Shoot while actually flying towards the player, NOT while still turning
+                if (Mathf.Abs(Quaternion.Angle(transform.rotation, toRotation)) < 15)
                 {
-                    remainingLaserCooldown = laserCooldown;
-                    Instantiate(laserPrefab, transform.position + transform.forward * 2 + transform.right * 0.35f - transform.up * 1f, transform.rotation);
-                    Instantiate(laserPrefab, transform.position + transform.forward * 2 - transform.right * 0.35f - transform.up * 1f, transform.rotation);
+                    if (remainingLaserCooldown <= 0)
+                    {
+                        remainingLaserCooldown = laserCooldown;
+                        Instantiate(laserPrefab, transform.position + transform.forward * 2 + transform.right * 0.35f - transform.up * 1f, transform.rotation);
+                        Instantiate(laserPrefab, transform.position + transform.forward * 2 - transform.right * 0.35f - transform.up * 1f, transform.rotation);
+                    }
                 }
             }
         }

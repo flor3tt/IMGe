@@ -111,7 +111,6 @@ public class Player : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
         float damage = 0;
         if(other.tag == "Enemy")
         {
