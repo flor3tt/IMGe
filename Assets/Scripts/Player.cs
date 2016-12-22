@@ -28,6 +28,8 @@ public class Player : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+
+
         hitpoints = 100;
         shieldpoints = 200;
         shield = GameObject.FindGameObjectWithTag("Shield");
