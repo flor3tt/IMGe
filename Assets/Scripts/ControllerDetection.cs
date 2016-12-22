@@ -100,13 +100,6 @@ public class ControllerDetection : MonoBehaviour {
 
         if(anzahlSpieler > 0 && Input.GetKeyDown(KeyCode.Space))
         {
-            foreach(SerialPort stream in streams)
-            {
-                if(stream != null)
-                {
-                    stream.Close();
-                }
-            }
 
             Object.DontDestroyOnLoad(this);
 

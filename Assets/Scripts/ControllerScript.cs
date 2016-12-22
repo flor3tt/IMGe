@@ -71,6 +71,8 @@ public class ControllerScript : MonoBehaviour
         ControllerDetection controllerDetection = GameObject.Find("Playermanager").GetComponent<ControllerDetection>();
         comPort = controllerDetection.spieler1;
 
+        Destroy(controllerDetection.GetComponentInParent<GameObject>());
+
         stream = new SerialPort(comPort, 115200);
         stream.Open();//Open the serial Stream
         Debug.Log("Serial Port was opened");
