@@ -9,6 +9,7 @@ public class ControllerDetection : MonoBehaviour {
 
     public SerialPort[] streams = new SerialPort[9];
     public Text UItext;
+
     string receivedData;
     int digitalData;
     int bitmaskAllButtons = System.Convert.ToInt32("000fc0", 16);
@@ -49,6 +50,7 @@ public class ControllerDetection : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        
         if(spieler1 == null)
         {
             UItext.text = "Player 1 press any Controller Button to continue!";
