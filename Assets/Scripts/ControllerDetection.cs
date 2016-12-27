@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.IO.Ports;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,7 @@ public class ControllerDetection : MonoBehaviour {
             {
                 streams[i - 1] = new SerialPort("COM" + i, 115200);
                 streams[i - 1].Open();
+                streams[i - 1].ReadTimeout = 1;
             }
             catch(System.IO.IOException e)
             {
@@ -38,7 +40,7 @@ public class ControllerDetection : MonoBehaviour {
             }
         }
 
-        for(int i = 0; i < 9; i++)
+        for (int i = 0; i < 9; i++)
         {
             if(streams[i] != null)
             {
@@ -46,16 +48,16 @@ public class ControllerDetection : MonoBehaviour {
             }
         }
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
-        
-        if(spieler1 == null)
+
+        if (spieler1 == null)
         {
             UItext.text = "Player 1 press any Controller Button to continue!";
         }
-        else if(spieler2 == null)
+        else if (spieler2 == null)
         {
             UItext.text = "Player 2 press any Controller Button to continue!\nOr Press Space to start Single Player mode!";
         }
@@ -64,46 +66,58 @@ public class ControllerDetection : MonoBehaviour {
             UItext.text = "Press Space to start 2 Player mode!";
         }
 
-        for (int i = 0; i < 9; i++)
+        for (int i = 1; i < 9; i++)
         {
             if (streams[i] != null)
             {
                 streams[i].Write("1");
-                receivedData = streams[i].ReadLine();
-                digitalData = System.Convert.ToInt32(receivedData, 16);
-                if ((digitalData & bitmaskAllButtons) != 0)
+                try
                 {
-                    if (spieler1 == null)
+                    receivedData = streams[i].ReadLine();
+                    digitalData = System.Convert.ToInt32(receivedData, 16);
+                    if ((digitalData & bitmaskAllButtons) != 0)
                     {
-                        spieler1 = "COM" + (i + 1);
-                        Debug.Log("Spieler 1: COM" + (i+1));
-                        anzahlSpieler++;
-                    }
-                    else
-                    {
-                        if(spieler2 == null)
+                        if (spieler1 == null)
                         {
-                            spieler2 = "COM" + (i + 1);
-                            if(spieler2.Equals(spieler1))
+                            spieler1 = "COM" + (i + 1);
+                            Debug.Log("Spieler 1: COM" + (i + 1));
+                            anzahlSpieler++;
+                        }
+                        else
+                        {
+                            if (spieler2 == null)
                             {
-                                spieler2 = null;
-                            }
-                            else
-                            {
-                                Debug.Log("Spieler 2: COM" + (i + 1));
-                                anzahlSpieler++;
+                                spieler2 = "COM" + (i + 1);
+                                if (spieler2.Equals(spieler1))
+                                {
+                                    spieler2 = null;
+                                }
+                                else
+                                {
+                                    Debug.Log("Spieler 2: COM" + (i + 1));
+                                    anzahlSpieler++;
+                                }
                             }
                         }
                     }
                 }
+                catch(TimeoutException e)
+                {
+
+                }
             }
             receivedData = "";
         }
+        
 
-        if(anzahlSpieler > 0 && Input.GetKeyDown(KeyCode.Space))
+        if (anzahlSpieler > 0 && Input.GetKeyDown(KeyCode.Space))
         {
-
-            Object.DontDestroyOnLoad(this);
+            foreach(SerialPort s in streams)
+            {
+                if (s != null)
+                    s.Close();
+            }
+            UnityEngine.Object.DontDestroyOnLoad(this);
 
             SceneManager.LoadScene("Level1");
         }
