@@ -18,12 +18,16 @@ public class Player : MonoBehaviour {
     public float maxAcceleration;
     public float rotationSpeed;
     public float laserCooldown;
-
-
+    
     //Private control variables
     float remainingLaserCooldown;
     float hitpoints;
     float shieldpoints;
+
+    //Radar
+    public Texture radarBG;
+    public Texture radarDot;
+    public Texture radarDotDark;
 
     // Use this for initialization
     void Start ()
@@ -109,6 +113,12 @@ public class Player : MonoBehaviour {
     {
         GUI.Label(new Rect(10, 0, 100, 20), "HitPoints:\t" + hitpoints);
         GUI.Label(new Rect(10, 20, 100, 20), "Shield:\t" + shieldpoints);
+
+        GUI.DrawTexture(new Rect(Screen.width - 110, 10, 100, 100), radarBG);
+
+        GUI.DrawTexture(new Rect(Screen.width - 60, 50, 10, 10), radarDot);
+        
+
     }
 
     void OnTriggerEnter(Collider other)
