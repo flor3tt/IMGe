@@ -7,24 +7,24 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     GameObject explosion;
 
-    Transform player;
+    public Transform player;
     private float playerSpeed;
 
     //Laser Prefab
     public GameObject laserPrefab;
 
-    public float hitpoints;
-    public float speed;
+    public float hitpoints = 100;
+    public float speed = 75;
 
     //Flight control
-    Vector3 searchAngles;
+    public Vector3 searchAngles;
     bool isClose;
     Quaternion currentRotation;
     Quaternion toRotation;
     public float lerpTime;
 
     //Weapon control
-    public float laserCooldown;
+    public float laserCooldown = 1;
     float remainingLaserCooldown;
 
     // Use this for initialization
@@ -106,7 +106,7 @@ public class Enemy : MonoBehaviour {
         //Different behaviour for having (not) found the player
         if(player == null)
         {
-            //transform.Rotate(searchAngles * Time.deltaTime);
+            transform.Rotate(searchAngles * Time.deltaTime);
             LayerMask mask = 8;
             RaycastHit hit;
 

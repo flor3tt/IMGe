@@ -18,6 +18,7 @@ public class ControllerDetection : MonoBehaviour {
     public string spieler1;
     public string spieler2;
     int anzahlSpieler = 0;
+    int spieler1Nr = -1;
 
     // Use this for initialization
     void Start ()
@@ -52,11 +53,36 @@ public class ControllerDetection : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
+        
         if (spieler1 == null)
         {
             UItext.text = "Player 1 press any Controller Button to continue!";
         }
+        else
+        {
+            UItext.text = "Hold controller upside down\n"
+                + "Steer by tilting\n"
+                + "Shoot with Button 2\n"
+                + "Aceelerate or Break with Slider 4\n"
+                + "Have Fun!";
+
+            streams[spieler1Nr].Write("1");
+            try
+            {
+                receivedData = streams[spieler1Nr].ReadLine();
+                digitalData = System.Convert.ToInt32(receivedData, 16);
+                if ((digitalData & bitmaskAllButtons) != 0)
+                {
+                    StartCoroutine(startLevel());
+                }
+            }
+            catch (TimeoutException e)
+            {
+
+            }
+        }
+
+        /**
         else if (spieler2 == null)
         {
             UItext.text = "Player 2 press any Controller Button to continue!\nOr Press Space to start Single Player mode!";
@@ -65,6 +91,8 @@ public class ControllerDetection : MonoBehaviour {
         {
             UItext.text = "Press Space to start 2 Player mode!";
         }
+        */
+
 
         for (int i = 1; i < 9; i++)
         {
@@ -80,6 +108,7 @@ public class ControllerDetection : MonoBehaviour {
                         if (spieler1 == null)
                         {
                             spieler1 = "COM" + (i + 1);
+                            spieler1Nr = i;
                             Debug.Log("Spieler 1: COM" + (i + 1));
                             anzahlSpieler++;
                         }
@@ -121,6 +150,23 @@ public class ControllerDetection : MonoBehaviour {
 
             SceneManager.LoadScene("Level1");
         }
+    
+
+
+    }
+
+    public IEnumerator startLevel()
+    {
+        yield return new WaitForSeconds(10);
+
+        foreach (SerialPort s in streams)
+        {
+            if (s != null)
+                s.Close();
+        }
+        UnityEngine.Object.DontDestroyOnLoad(this);
+
+        SceneManager.LoadScene("Level1");
     }
         
 }

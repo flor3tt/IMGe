@@ -27,7 +27,14 @@ public class Player : MonoBehaviour {
     //Radar
     public Texture radarBG;
     public Texture radarDot;
-    public Texture radarDotDark;
+    public Texture radarDotUp;
+    public Texture radarDotDown;
+
+    //Enemy control
+    private Enemy[] enemies;
+    public GameObject enemyPrefab;
+    public float spawnCooldown;
+    private float remainingSpawnCooldown;
 
     // Use this for initialization
     void Start ()
@@ -37,6 +44,8 @@ public class Player : MonoBehaviour {
         hitpoints = 100;
         shieldpoints = 200;
         shield = GameObject.FindGameObjectWithTag("Shield");
+        enemies = FindObjectsOfType<Enemy>();
+        remainingSpawnCooldown = spawnCooldown;
 	}
 
     //FixedUpdate is called in fixed time intervals
@@ -45,6 +54,10 @@ public class Player : MonoBehaviour {
         speed += (0.5f - controller.getSlider1()) * 2 * maxAcceleration;
         speed = Mathf.Min(speed, maxSpeed);
         speed = Mathf.Max(speed, 0);
+
+        //Adjust camera FOV
+        Camera cam = FindObjectOfType<Camera>();
+        cam.fieldOfView = 60 + 20 * speed / maxSpeed;
     }
 	
 	// Update is called once per frame
@@ -57,6 +70,29 @@ public class Player : MonoBehaviour {
 
             //ToDo Game Over Scene
         }
+
+        //Spawn and Destroy Enemies
+        enemies = FindObjectsOfType<Enemy>();
+        foreach(Enemy e in enemies)
+        {
+            if(Vector3.Distance(transform.position, e.transform.position) > 5000)
+            {
+                Destroy(e);
+            }
+        }
+        if(remainingSpawnCooldown <= 0)
+        {
+            remainingSpawnCooldown = spawnCooldown;
+
+            //spawn new enemy
+            Instantiate(enemyPrefab, transform.position + transform.forward * Random.Range(-1000, 1000) + transform.right * Random.Range(-1000, 1000) + transform.up * Random.Range(-1000, 1000), transform.rotation);
+        }
+        else
+        {
+            remainingSpawnCooldown -= Time.deltaTime;
+        }
+
+
 
         //(de-)aktivate shield Renderer
         if(shield != null)
@@ -116,9 +152,45 @@ public class Player : MonoBehaviour {
 
         GUI.DrawTexture(new Rect(Screen.width - 110, 10, 100, 100), radarBG);
 
-        GUI.DrawTexture(new Rect(Screen.width - 60, 50, 10, 10), radarDot);
-        
+        //Enemy position to radar point transformation
+        Plane flightPlane = new Plane(transform.up, transform.position);
 
+        foreach(Enemy e in enemies)
+        {
+            float height;//height of enemy BELOW player, because sending the Raycast along the enemey.transform.up axis
+            float distance = Vector3.Distance(transform.position, e.transform.position);
+            Vector3 projection = Vector3.ProjectOnPlane(e.transform.position - transform.position, transform.up);
+            float angle1 = Vector3.Angle(transform.forward, projection);
+            float angle2 = Vector3.Angle(transform.right, projection);
+            if(angle2 >= 90)
+            {
+                angle1 = 360 - angle1;
+            }
+            angle1 -= 90;//for simpler sin/cos use
+
+            Ray ray = new Ray(e.transform.position, e.transform.up);
+            
+            flightPlane.Raycast(ray, out height);
+                        
+            float xPos = Screen.width - 65 + Mathf.Cos(angle1*Mathf.Deg2Rad) * 50 * Mathf.Min(1, distance / 400);
+            float yPos = 55 + Mathf.Sin(angle1 * Mathf.Deg2Rad) * 50 * Mathf.Min(1, distance / 400);
+
+            if(height / distance < -0.25f)
+            {
+                GUI.DrawTexture(new Rect(xPos, yPos, 10, 10), radarDotUp);
+            }
+            else if(height / distance > 0.25f)
+            {
+                GUI.DrawTexture(new Rect(xPos, yPos, 10, 10), radarDotDown);
+            }
+            else
+            {
+                GUI.DrawTexture(new Rect(xPos, yPos, 10, 10), radarDot);
+            }
+        }
+
+        
+        
     }
 
     void OnTriggerEnter(Collider other)
