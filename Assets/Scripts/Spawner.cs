@@ -10,7 +10,7 @@ public class Spawner : MonoBehaviour {
     //Enemie Control
     public GameObject enemyPrefab;
     private Enemy[] enemies;
-    public float spawnCooldown;
+    public float enemySpawnCooldown;
     private float remainingSpawnCooldown;
     
 
@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         enemies = FindObjectsOfType<Enemy>();
-        remainingSpawnCooldown = spawnCooldown;
+        remainingSpawnCooldown = enemySpawnCooldown;
     }
 	
 	// Update is called once per frame
@@ -45,14 +45,14 @@ public class Spawner : MonoBehaviour {
         }
         if (remainingSpawnCooldown <= 0)
         {
-            remainingSpawnCooldown = spawnCooldown;
+            remainingSpawnCooldown = enemySpawnCooldown;
 
             //spawn new enemy
             GameObject spawnedEnemy = Instantiate(enemyPrefab, transform.position + transform.forward * Random.Range(-1000, 1000) + transform.right * Random.Range(-1000, 1000) + transform.up * Random.Range(-1000, 1000), transform.rotation);
             spawnedEnemy.GetComponent<Enemy>().player = this.player;
 
             //spawn random item
-            GameObject spawnedItem = Instantiate(items[Random.Range(0, items.Length)], transform.position + transform.forward * Random.Range(-1000, 1000) + transform.right * Random.Range(-1000, 1000) + transform.up * Random.Range(-1000, 1000), transform.rotation);
+            GameObject spawnedItem = Instantiate(items[Random.Range(0, items.Length)], transform.position + transform.forward * Random.Range(-300, 300) + transform.right * Random.Range(-300, 300) + transform.up * Random.Range(-300, 300), transform.rotation);
             spawnedItem.GetComponent<Item>().player = this.player;
         }
         else

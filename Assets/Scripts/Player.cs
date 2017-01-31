@@ -51,7 +51,7 @@ public class Player : MonoBehaviour {
         shieldpoints = 200;
         initialLaserCooldown = laserCooldown;
         laserItemDuration = 0.0f;
-        laserItemDurationStart = 10.0f;
+        laserItemDurationStart = 5.0f;
         shield = GameObject.FindGameObjectWithTag("Shield");
         //enemies = FindObjectsOfType<Enemy>();
         //remainingSpawnCooldown = spawnCooldown;
