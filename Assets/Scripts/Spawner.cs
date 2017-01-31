@@ -28,6 +28,7 @@ public class Spawner : MonoBehaviour {
 	void Update () {
         //Spawn and Destroy Enemies and items
         enemies = FindObjectsOfType<Enemy>();
+        existingItems = FindObjectsOfType<Item>();
         foreach (Enemy e in enemies)
         {
             if (Vector3.Distance(transform.position, e.transform.position) > 5000)

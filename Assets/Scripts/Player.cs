@@ -19,8 +19,11 @@ public class Player : MonoBehaviour {
     public float maxAcceleration;
     public float rotationSpeed;
     public float laserCooldown;
-    
+
     //Private control variables
+    float initialLaserCooldown;
+    float laserItemDuration;
+    float laserItemDurationStart;
     float remainingLaserCooldown;
     float hitpoints;
     float maxHitpoints;
@@ -46,6 +49,9 @@ public class Player : MonoBehaviour {
         hitpoints = 100;
         maxHitpoints = 100;
         shieldpoints = 200;
+        initialLaserCooldown = laserCooldown;
+        laserItemDuration = 0.0f;
+        laserItemDurationStart = 10.0f;
         shield = GameObject.FindGameObjectWithTag("Shield");
         //enemies = FindObjectsOfType<Enemy>();
         //remainingSpawnCooldown = spawnCooldown;
@@ -144,6 +150,15 @@ public class Player : MonoBehaviour {
             }
         }
 
+        if(laserItemDuration <= 0.0f)
+        {
+            laserCooldown = initialLaserCooldown;
+        } else
+        {
+            Debug.Log(laserItemDuration);
+            laserItemDuration -= Time.deltaTime;
+        }
+
         //Handle Weapon Cooldowns
         remainingLaserCooldown -= Time.deltaTime;
     }
@@ -235,9 +250,13 @@ public class Player : MonoBehaviour {
     {
         switch (itemType)
         {
-            case 0:
+            case 0: //heal
                 hitpoints = Mathf.Min(hitpoints + 50, maxHitpoints);
                 shieldpoints = 200;
+                break;
+            case 1: //fire faster
+                laserCooldown = 0.15f;
+                laserItemDuration = laserItemDurationStart;
                 break;
             default:
                 Debug.Log("ItemType " + itemType + " doesnt exist!");
