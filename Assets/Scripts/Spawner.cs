@@ -49,7 +49,7 @@ public class Spawner : MonoBehaviour {
 
             //spawn new enemy
             GameObject spawnedEnemy = Instantiate(enemyPrefab, transform.position + transform.forward * Random.Range(-1000, 1000) + transform.right * Random.Range(-1000, 1000) + transform.up * Random.Range(-1000, 1000), transform.rotation);
-            spawnedEnemy.GetComponent<Enemy>().player = this.player;
+
 
             //spawn random item
             GameObject spawnedItem = Instantiate(items[Random.Range(0, items.Length)], transform.position + transform.forward * Random.Range(-300, 300) + transform.right * Random.Range(-300, 300) + transform.up * Random.Range(-300, 300), transform.rotation);

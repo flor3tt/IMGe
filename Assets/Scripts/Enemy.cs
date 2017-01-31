@@ -95,7 +95,6 @@ public class Enemy : MonoBehaviour {
 		if(hitpoints <= 0)
         {
             //ToDo INstantiate Explosion
-            player.gameObject.GetComponentInParent<Player>().increaseScore(50);
             Destroy(gameObject);
 
             Instantiate(explosion, transform.position, Quaternion.identity);
@@ -166,6 +165,18 @@ public class Enemy : MonoBehaviour {
                     }
                 }
             }
+
+            //Weitergeben des Players an Verbündete in der Nähe
+            foreach (Enemy e in FindObjectsOfType<Enemy>())
+            {
+                if(Vector3.Distance(transform.position, e.transform.position) < 300)
+                {
+                    if(e.player == null)
+                    {
+                        e.player = this.player;
+                    }
+                }
+            }
         }
 
         //Handle Weapon Cooldowns
@@ -179,6 +190,7 @@ public class Enemy : MonoBehaviour {
         if (other.tag == "Laser")
         {
             hitpoints -= 25;
+            player.gameObject.GetComponentInParent<Player>().increaseScore(25);
             Destroy(other.gameObject);
         }
         else if(other.tag == "Enemy")
@@ -187,6 +199,7 @@ public class Enemy : MonoBehaviour {
         }
         else if(other.tag == "Player")
         {
+            player.gameObject.GetComponentInParent<Player>().increaseScore(100);
             hitpoints = 0;
         }
     }

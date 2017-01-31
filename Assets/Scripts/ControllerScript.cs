@@ -68,11 +68,11 @@ public class ControllerScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //ControllerDetection controllerDetection = GameObject.Find("Playermanager").GetComponent<ControllerDetection>();
-        //comPort = controllerDetection.spieler1;
-        comPort = "COM3";
+        ControllerDetection controllerDetection = GameObject.Find("Playermanager").GetComponent<ControllerDetection>();
+        comPort = controllerDetection.spieler1;
+        //comPort = "COM3";
 
-        //Destroy(controllerDetection.gameObject);
+        Destroy(controllerDetection.gameObject);
 
         stream = new SerialPort(comPort, 115200);
         stream.Open();//Open the serial Stream

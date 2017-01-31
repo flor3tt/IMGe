@@ -76,7 +76,8 @@ public class Player : MonoBehaviour {
         if(hitpoints <= 0)
         {
             //Destroy(gameObject);
-            SceneManager.LoadScene("Menu");
+            
+            SceneManager.LoadScene("GameOver");
             //ToDo Game Over Scene
         }
 
