@@ -118,15 +118,15 @@ public class Enemy : MonoBehaviour {
             vector = Quaternion.AngleAxis(-45, Vector3.up) * vector;
 
             //Cast a bunch of rays in a cone forward to find the player
-            if (Physics.Raycast(transform.position,                 transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, up *            transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, up * right *    transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, right *         transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, down * right *  transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, down *          transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, down * left *   transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, left *          transform.forward, out hit, 300) ||
-                Physics.Raycast(transform.position, up * left *     transform.forward, out hit, 300) )
+            if (Physics.Raycast(transform.position,                 transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, up *            transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, up * right *    transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, right *         transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, down * right *  transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, down *          transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, down * left *   transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, left *          transform.forward, out hit, 500) ||
+                Physics.Raycast(transform.position, up * left *     transform.forward, out hit, 500) )
             {
                 player = hit.transform;
             }
@@ -190,7 +190,8 @@ public class Enemy : MonoBehaviour {
         if (other.tag == "Laser")
         {
             hitpoints -= 25;
-            player.gameObject.GetComponentInParent<Player>().increaseScore(25);
+            if(player != null)
+                player.gameObject.GetComponentInParent<Player>().increaseScore(25);
             Destroy(other.gameObject);
         }
         else if(other.tag == "Enemy")
@@ -199,14 +200,15 @@ public class Enemy : MonoBehaviour {
         }
         else if(other.tag == "Player")
         {
-            player.gameObject.GetComponentInParent<Player>().increaseScore(100);
+            if (player != null)
+                player.gameObject.GetComponentInParent<Player>().increaseScore(100);
             hitpoints = 0;
         }
     }
 
     public IEnumerator close()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(15f);
         isClose = false;
 
         if(player != null)

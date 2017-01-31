@@ -141,7 +141,7 @@ public class Player : MonoBehaviour {
 
 
         //Shoot da LAAASOOOOOOOR
-        if (controller.getButton2())
+        if (controller.getButton5())
         {
             if(remainingLaserCooldown <= 0)
             {

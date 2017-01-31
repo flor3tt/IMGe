@@ -62,7 +62,7 @@ public class ControllerDetection : MonoBehaviour {
         {
             UItext.text = "Hold controller upside down\n"
                 + "Steer by tilting\n"
-                + "Shoot with Button 2\n"
+                + "Shoot with Button 5\n"
                 + "Aceelerate or Break with Slider 4\n"
                 + "Have Fun!";
 
