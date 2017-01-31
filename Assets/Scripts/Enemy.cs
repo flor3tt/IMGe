@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour {
     //Laser Prefab
     public GameObject laserPrefab;
 
-    public float hitpoints = 100;
+    public float hitpoints = 50;
     public float speed = 75;
 
     //Flight control
@@ -95,6 +95,7 @@ public class Enemy : MonoBehaviour {
 		if(hitpoints <= 0)
         {
             //ToDo INstantiate Explosion
+            player.gameObject.GetComponentInParent<Player>().increaseScore(50);
             Destroy(gameObject);
 
             Instantiate(explosion, transform.position, Quaternion.identity);
@@ -174,7 +175,7 @@ public class Enemy : MonoBehaviour {
     //Collision Detection
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
+        //Debug.Log(other.tag);
         if (other.tag == "Laser")
         {
             hitpoints -= 25;
